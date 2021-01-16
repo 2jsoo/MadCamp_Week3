@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -23,7 +24,14 @@ import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
+private val retrofit = Retrofit.Builder()
+    .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
+    .addConverterFactory(GsonConverterFactory.create()) // converter 지정
+    .build() // retrofit 객체 생성
 
 class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
 
@@ -32,13 +40,17 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
     private lateinit var mapView: MapView
     private lateinit var mapViewContainer: ViewGroup
 
-    private lateinit var Markers: ArrayList<MapPOIItem>
+    private var Markers: ArrayList<MapPOIItem> = arrayListOf()
+    private var bunsilmulMarkers: ArrayList<bunsilmul> = arrayListOf()
+    private val bunsilmulMap: MutableMap<MapPOIItem, bunsilmul> = mutableMapOf()
 
     private val GPS_ENABLE_REQUEST_CODE = 2001
     private val PERMISSIONS_REQUEST_CODE = 100
     var REQUIRED_PERMISSIONS = arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION)
 
     private var pause = false
+
+    private lateinit var mHandler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,15 +94,28 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
             finish()
         }
 
-        val Marker1 = MapPOIItem()
-        Marker1.itemName = "분실물"
-
-        Marker1.tag = 0
-        Marker1.mapPoint= MapPoint.mapPointWithGeoCoord(36.373374, 127.359725)
-        Marker1.markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
-        Marker1.customImageResourceId = R.drawable.question_mark// 마커 이미지.
-        Marker1.isCustomImageAutoscale = false// hdpi, xhdpi 등 안드로이드 플랫폼의 스케일을 사용할 경우 지도 라이브러리의 스케일 기능을 꺼줌.
-        Marker1.setCustomImageAnchor(0.5f, 1.0f) // 마커 이미지중 기준이 되는 위치(앵커포인트) 지정 - 마커 이미지 좌측 상단 기준 x(0.0f ~ 1.0f), y(0.0f ~ 1.0f) 값.
+//        val Marker1 = MapPOIItem()
+//        Marker1.itemName = "분실물"
+//
+//        Marker1.tag = 0
+//        Marker1.mapPoint= MapPoint.mapPointWithGeoCoord(36.373374, 127.359725)
+//        Marker1.markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+//        Marker1.customImageResourceId = R.drawable.question_mark// 마커 이미지.
+//        Marker1.isCustomImageAutoscale = false// hdpi, xhdpi 등 안드로이드 플랫폼의 스케일을 사용할 경우 지도 라이브러리의 스케일 기능을 꺼줌.
+//        Marker1.setCustomImageAnchor(0.5f, 1.0f) // 마커 이미지중 기준이 되는 위치(앵커포인트) 지정 - 마커 이미지 좌측 상단 기준 x(0.0f ~ 1.0f), y(0.0f ~ 1.0f) 값.
+////        mapView.addPOIItem(Marker1)
+//
+//        val Marker2 = MapPOIItem()
+//        Marker2.itemName = "분실물"
+//
+//        Marker2.tag = 0
+//        Marker2.mapPoint= MapPoint.mapPointWithGeoCoord(36.369476318359375, 127.36253356933594)
+//        Marker2.markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+//        Marker2.customImageResourceId = R.drawable.question_mark// 마커 이미지.
+//        Marker2.isCustomImageAutoscale = false// hdpi, xhdpi 등 안드로이드 플랫폼의 스케일을 사용할 경우 지도 라이브러리의 스케일 기능을 꺼줌.
+//        Marker2.setCustomImageAnchor(0.5f, 1.0f) // 마커 이미지중 기준이 되는 위치(앵커포인트) 지정 - 마커 이미지 좌측 상단 기준 x(0.0f ~ 1.0f), y(0.0f ~ 1.0f) 값.
+////        mapView.addPOIItem(Marker2)
+//        mapView.addPOIItems(arrayOf(Marker1, Marker2))
 
         mapView.setCalloutBalloonAdapter(object: CalloutBalloonAdapter{
             private val mCalloutBalloon = layoutInflater.inflate(R.layout.custom_marker, null)
@@ -107,15 +132,17 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
 
             override fun getCalloutBalloon(p0: MapPOIItem?): View {
                 mCalloutBalloon.findViewById<TextView>(R.id.title).text = p0?.getItemName()
-                mCalloutBalloon.findViewById<TextView>(R.id.desc).text = "Custom CalloutBalloon"
+//                mCalloutBalloon.findViewById<TextView>(R.id.desc).text = "Custom CalloutBalloon"
                 return mCalloutBalloon
             }
         })
 
         mapView.setPOIItemEventListener(this)
 
-        mapView.addPOIItem(Marker1)
+//        mapView.addPOIItem(Marker1)
 
+        mHandler = Handler()
+        GetBunsilmulItems()
 //        val marker: MapPOIItem = MapPOIItem()
 //        marker.setItemName("Default Marker")
 //        marker.setTag(0)
@@ -330,13 +357,80 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
     ) {
         Log.d("Balloon","Touched")
         val intent = Intent(this@MainActivity_Map, bunsilmulActivity::class.java)
+
+
+        bunsilmulMap.get(p1)?._id?.let{intent.putExtra("id", it)}
+        bunsilmulMap.get(p1)?.category?.let{intent.putExtra("category", it)}
+        bunsilmulMap.get(p1)?.information?.let{intent.putExtra("information", it)}
+
+        bunsilmulMap.get(p1)?._id?.let {Log.d("ID", it)}
+        bunsilmulMap.get(p1)?.category?.let {Log.d("CATEGORY", it)}
+        bunsilmulMap.get(p1)?.information?.let {Log.d("INFORMATION", it)}
+
         startActivity(intent)
+
     }
 
     override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
     }
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
         Log.d("MARKER","TOUCHED")
+    }
+
+    var time3: Long = 0
+    override fun onBackPressed() {
+        val time1 = System.currentTimeMillis()
+        val time2 = time1 - time3
+        if (time2 in 0..2000) {
+            moveTaskToBack(true) // 태스크를 백그라운드로 이동
+            finishAndRemoveTask() // 액티비티 종료 + 태스크 리스트에서 지우기
+            System.exit(0)
+        }
+        else {
+            time3 = time1
+            Toast.makeText(applicationContext, "한번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun GetBunsilmulItems(){
+        val call = BunsilmulApiObject.retrofitService.GetBunsilmul()
+        call.enqueue(object: retrofit2.Callback<Array<bunsilmul>> {
+            override fun onFailure(call: Call<Array<bunsilmul>>, t: Throwable) {
+                Log.d("BunsilmulCreate","Fail")
+            }
+            override fun onResponse(call: Call<Array<bunsilmul>>, response: retrofit2.Response<Array<bunsilmul>>) {
+                if(response.isSuccessful){
+                    response.body()?.let{
+                        val runnable = object: Runnable{
+                            override fun run() {
+                                var i = 0
+                                for (item in it) {
+                                    Log.d("분실물","GET")
+                                    val Marker = MapPOIItem()
+                                    Marker.itemName = "분실물"
+                                    Marker.tag = i
+                                    Marker.mapPoint = MapPoint.mapPointWithGeoCoord(item.latitude!!, item.longitude!!)
+                                    Marker.markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+                                    Marker.customImageResourceId = R.drawable.question_mark// 마커 이미지.
+                                    Marker.isCustomImageAutoscale = false// hdpi, xhdpi 등 안드로이드 플랫폼의 스케일을 사용할 경우 지도 라이브러리의 스케일 기능을 꺼줌.
+                                    Marker.setCustomImageAnchor(0.5f, 1.0f) // 마커 이미지중 기준이 되는 위치(앵커포인트) 지정 - 마커 이미지 좌측 상단 기준 x(0.0f ~ 1.0f), y(0.0f ~ 1.0f) 값.
+                                    mapView.addPOIItem(Marker)
+                                    Markers.add(Marker)
+                                    bunsilmulMarkers.add(item)
+                                    bunsilmulMap.put(Marker, item) // bunsilmul's photo is null
+                                    i++
+                                    item._id?.let{Log.d("id", it)}
+                                }
+                            }
+                        }
+                        mHandler.post(runnable)
+                    }
+                }
+                else{
+                    Log.d("BunsilmulCreate","response is error")
+                }
+            }
+        })
     }
 
 //    private fun getHashKey() {

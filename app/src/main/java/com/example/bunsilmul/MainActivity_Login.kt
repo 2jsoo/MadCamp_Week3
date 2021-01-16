@@ -225,13 +225,16 @@ class MainActivity_Login : AppCompatActivity() {
         val time1 = System.currentTimeMillis()
         val time2 = time1 - time3
         if (time2 in 0..2000) {
-            finish()
+            moveTaskToBack(true) // 태스크를 백그라운드로 이동
+            finishAndRemoveTask() // 액티비티 종료 + 태스크 리스트에서 지우기
+            System.exit(0)
         }
         else {
             time3 = time1
             Toast.makeText(applicationContext, "한번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 }
