@@ -222,6 +222,8 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
     }
 
 
+
+
     ///PHOTO&GALLERY RESULT
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

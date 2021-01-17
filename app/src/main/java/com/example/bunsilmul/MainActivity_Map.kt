@@ -48,6 +48,7 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         mapViewContainer = findViewById<View>(R.id.map_view) as ViewGroup
         mapViewContainer.addView(mapView) // 지도를 띄움
         mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(36.373374, 127.359725), true);
+        mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving
         mapView.setZoomLevelFloat(3.0F, true)
         mapView.setMapRotationAngle(30F, true)
         mapView.setMapViewEventListener(this)
@@ -107,6 +108,7 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
 
             override fun getCalloutBalloon(p0: MapPOIItem?): View {
                 mCalloutBalloon.findViewById<TextView>(R.id.title).text = p0?.getItemName()
+                mCalloutBalloon.findViewById<TextView>(R.id.desc).text = "Custom CalloutBalloon"
                 mCalloutBalloon.findViewById<TextView>(R.id.desc).text = "Custom CalloutBalloon"
                 return mCalloutBalloon
             }
@@ -337,6 +339,21 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
     }
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
         Log.d("MARKER","TOUCHED")
+    }
+
+    var time3: Long = 0
+    override fun onBackPressed() {
+        val time1 = System.currentTimeMillis()
+        val time2 = time1 - time3
+        if (time2 in 0..2000) {
+            moveTaskToBack(true) // 태스크를 백그라운드로 이동
+            finishAndRemoveTask() // 액티비티 종료 + 태스크 리스트에서 지우기
+            System.exit(0)
+        }
+        else {
+            time3 = time1
+            Toast.makeText(applicationContext, "한번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
+        }
     }
 
 //    private fun getHashKey() {

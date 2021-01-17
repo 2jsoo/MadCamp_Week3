@@ -32,7 +32,7 @@
 
         <activity android:name=".FindActivity"/>
         <activity android:name=".bunsilmulActivity"/>
-        <activity android:name=".MainActivity"/>
+<!--        <activity android:name=".MainActivity"/>-->
         <activity android:name=".MainActivity_Map"/>
         <activity android:name=".WantActivity"/>
         <activity android:name=".Activity_Settings">
