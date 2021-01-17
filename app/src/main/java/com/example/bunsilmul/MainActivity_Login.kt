@@ -64,8 +64,8 @@ class MainActivity_Login : AppCompatActivity() {
 //        }
         setContentView(R.layout.activity_main_login)
 
-        val toolBar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolBar)
+//        val toolBar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+//        setSupportActionBar(toolBar)
 
 //        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_login)
 //        loggedInView = findViewById<View>(R.id.logged_in_view) as LinearLayout
