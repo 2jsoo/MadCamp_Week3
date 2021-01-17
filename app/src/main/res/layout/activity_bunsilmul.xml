@@ -18,6 +18,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/bunsilmul_guideline"
         app:layout_constraintTop_toTopOf="parent"
+        android:id = "@+id/bunsilmul_photo"
         />
     ​
     <TextView
@@ -25,6 +26,17 @@
         android:layout_height="wrap_content"
         android:text = "카테고리"
         app:layout_constraintTop_toTopOf="@+id/bunsilmul_guideline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:id = "@+id/bunsilmul_text_category_guidline"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "카테고리"
+        app:layout_constraintTop_toTopOf="@+id/bunsilmul_text_category_guidline"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="20dp"
@@ -39,8 +51,29 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="70dp"
         android:layout_marginLeft="20dp"
+        android:id="@+id/bunsilmul_text_information_guidline"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "정보"
+        app:layout_constraintTop_toTopOf="@+id/bunsilmul_text_information_guidline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
         android:id="@+id/bunsilmul_text_information"
         />
+
+    <Button
+        android:id="@+id/chat_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "채팅"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="30dp"/>
     ​
     ​
     ​

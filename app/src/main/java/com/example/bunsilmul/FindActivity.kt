@@ -39,14 +39,49 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.firebase.auth.FirebaseAuth
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
+data class bunsilmul(
+    var _id: String?,
+    var uid: String?,
+    var category: String?,
+    var information: String?,
+    var photo: String?,
+    var latitude: Double?,
+    var longitude: Double?
+)
+
+data class message(
+    var message: String,
+    var _id: String
+)
+private val retrofit = Retrofit.Builder()
+    .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
+    .addConverterFactory(GsonConverterFactory.create()) // converter 지정
+    .build() // retrofit 객체 생성
+
+
+object BunsilmulApiObject {
+    val retrofitService: BunsilmulInterface by lazy {
+        retrofit.create(BunsilmulInterface::class.java)
+    }
+}
+
+
+
 
 class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener {
 
@@ -63,6 +98,15 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
     lateinit var photo_btn: ImageButton
 
     private var click = false
+
+    private var input_category = false
+    private var input_information = false
+    private var input_photo = false
+
+    private lateinit var register_btn: Button
+
+
+    private var bunsilmul = bunsilmul(null,null, null, null, null, null, null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +181,19 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                     view: View,
                     position: Int,
                     id: Long
-            ) {}
+            ) {
+                if(position == 0 ){
+                    input_category = false
+                    register_btn.isEnabled =false
+                }else{
+                    input_category = true
+                    bunsilmul.category = list[position]
+                    if(input_category && input_information && input_photo){
+                        register_btn.isEnabled = true
+                    }
+                }
+
+            }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // another interface callback
@@ -147,18 +203,76 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
         //EditText
         var edit_text = findViewById(R.id.edit_text) as EditText
         if (edit_text != null){
-            val string_ = edit_text.text.toString()
+            val string = edit_text.text.toString()
+            Log.d("정보",string)
         }
 
+        edit_text.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+            }
 
-        val register_btn = findViewById<Button>(R.id.register_button)
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s==null){
+                    input_information = false
+                    register_btn.isEnabled = false
+                }else if(s.isEmpty()){
+                    input_information = false
+                    register_btn.isEnabled = false
+                } else{
+                    input_information = true
+                    bunsilmul.information = s.toString()
+                    if(input_category && input_information && input_photo){
+                        register_btn.isEnabled = true
+                    }
+
+                }
+            }
+
+        })
+
+
+        register_btn = findViewById<Button>(R.id.register_button)
+        register_btn.isEnabled  = false
         register_btn.setOnClickListener {
             Log.d("분실물 위치",mapView.mapCenterPoint.mapPointGeoCoord.longitude.toString()+mapView.mapCenterPoint.mapPointGeoCoord.latitude.toString())
             //서버로 전달
-            click = true
-            val intent = Intent(this, MainActivity_Map::class.java)
-            startActivity(intent)
-            finish()
+            bunsilmul.uid = FirebaseAuth.getInstance().currentUser?.uid
+            bunsilmul.latitude = mapView.mapCenterPoint.mapPointGeoCoord.latitude
+            bunsilmul.longitude = mapView.mapCenterPoint.mapPointGeoCoord.longitude
+            register_btn.isEnabled = false
+            val call = BunsilmulApiObject.retrofitService.CreateBunsilmul(bunsilmul)
+            call.enqueue(object: retrofit2.Callback<message> {
+                override fun onFailure(call: Call<message>, t: Throwable) {
+                    Log.d("BunsilmulCreate","Fail")
+                    register_btn.isEnabled = true
+                }
+                override fun onResponse(call: Call<message>, response: retrofit2.Response<message>) {
+                    if(response.isSuccessful){
+                        response.body()?.let{
+                            if(it.message == "success"){
+                                Log.d("BunsilmulCreate","Success")
+                                click = true
+                                bunsilmul._id = it._id
+                                Log.d("ID",it._id)
+                                val intent = Intent(this@FindActivity, MainActivity_Map::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Log.d("BunsilmulCreate","error")
+                                register_btn.isEnabled = true
+                            }
+                        }
+                    }
+                    else{
+                        Log.d("BunsilmulCreate","response is error")
+                        register_btn.isEnabled = true
+                    }
+                }
+            })
+
         }
 
 
@@ -248,6 +362,11 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                             val bitmap = rotate(bitmapOrigin, exifDegree) // original bitmap
                             file.delete()
                             photo_btn.setImageBitmap(ReduceBitmap(bitmapOrigin))
+                            bunsilmul.photo = imageToString(bitmapOrigin)
+                            input_photo = true
+                            if(input_category && input_information && input_photo){
+                                register_btn.isEnabled = true
+                            }
                         }
                     }
                     catch (e:IOException) { e.printStackTrace(); } }
@@ -261,7 +380,12 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                             val exifDegree = exifOrientationToDegrees(exifOrientation)
                             val bitmap = rotate(bitmapOrigin, exifDegree) // original bitmap
                             file.delete()
-                            photo_btn.setImageBitmap(ReduceBitmap(bitmapOrigin))
+                            photo_btn.setImageBitmap(ReduceBitmap(bitmap))
+                            bunsilmul.photo = imageToString(bitmap)
+                            input_photo = true
+                            if(input_category && input_information && input_photo){
+                                register_btn.isEnabled = true
+                            }
                         }
                     }
                     catch (e :IOException ) { e.printStackTrace() }
@@ -281,7 +405,12 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
 
                         }
                     }
+                    bunsilmul.photo = imageToString(bitmap)
                     photo_btn.setImageBitmap(bitmap)
+                    input_photo = true
+                    if(input_category && input_information && input_photo){
+                        register_btn.isEnabled = true
+                    }
                 }
                 else{ Log.d("Error", "Something Wrong") }
             } else{ Log.d("Error", "Something Wrong") }
@@ -331,7 +460,7 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
         val width = bitmap.width
         val heigth = bitmap.height
 
-        return Bitmap.createScaledBitmap(bitmap, (width*0.3).toInt(), (heigth*0.3).toInt(),true)
+        return Bitmap.createScaledBitmap(bitmap, (width*0.1).toInt(), (heigth*0.1).toInt(),true)
     }
 
     override fun onCurrentLocationUpdate(p0: MapView?, currentLocation: MapPoint?, accuracyInMeters: Float) {

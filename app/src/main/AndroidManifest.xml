@@ -32,16 +32,15 @@
 
         <activity android:name=".FindActivity"/>
         <activity android:name=".bunsilmulActivity"/>
-<!--        <activity android:name=".MainActivity"/>-->
         <activity android:name=".MainActivity_Map"/>
         <activity android:name=".WantActivity"/>
         <activity android:name=".Activity_Settings">
-
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+        <activity android:name=".ChatActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
