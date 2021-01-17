@@ -362,6 +362,7 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         bunsilmulMap.get(p1)?._id?.let{intent.putExtra("id", it)}
         bunsilmulMap.get(p1)?.category?.let{intent.putExtra("category", it)}
         bunsilmulMap.get(p1)?.information?.let{intent.putExtra("information", it)}
+        bunsilmulMap.get(p1)?.uid?.let{intent.putExtra("uid",it)}
 
         bunsilmulMap.get(p1)?._id?.let {Log.d("ID", it)}
         bunsilmulMap.get(p1)?.category?.let {Log.d("CATEGORY", it)}
