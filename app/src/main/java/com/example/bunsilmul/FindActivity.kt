@@ -1,10 +1,8 @@
 package com.example.bunsilmul
 
 import android.Manifest
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.*
 //
 import android.graphics.Color
@@ -17,15 +15,12 @@ import android.text.Editable
 import android.text.TextWatcher
 //
 import android.graphics.drawable.ColorDrawable
-import android.location.LocationManager
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.provider.Settings
-import android.text.TextUtils
 import android.util.Base64.DEFAULT
 import android.util.Base64.encodeToString
 import android.util.Log
@@ -35,19 +30,13 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
-import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.POST
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException

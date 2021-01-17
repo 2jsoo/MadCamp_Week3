@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
@@ -15,11 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import net.daum.android.map.coord.MapCoordLatLng
-import net.daum.android.map.location.MapViewLocationManager
 import net.daum.mf.map.api.*
-import net.daum.mf.map.api.MapPoint.GeoCoordinate
-import net.daum.mf.map.api.MapPoint.mapPointWithGeoCoord
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -36,7 +30,7 @@ data class user_location(
         var longitude: Double
 )
 
-data class message(
+data class wantmessage(
         var message: String,
         var uid: String
 )
@@ -158,11 +152,11 @@ class WantActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
             locations.location.longitude = mapPointGeo.longitude
 
             val call = LocationApiObject.retrofitService.CreateLocation(locations)
-            call.enqueue(object : retrofit2.Callback<message>{
-                override fun onFailure(call: Call<message>, t: Throwable) {
+            call.enqueue(object : retrofit2.Callback<wantmessage>{
+                override fun onFailure(call: Call<wantmessage>, t: Throwable) {
                     Log.d("LocationCreate","Fail")
                 }
-                override fun onResponse(call: Call<message>, response: retrofit2.Response<message>) {
+                override fun onResponse(call: Call<wantmessage>, response: retrofit2.Response<wantmessage>) {
                     if(response.isSuccessful){
                         Log.d("Location","Success")
                         response.body()?.let{

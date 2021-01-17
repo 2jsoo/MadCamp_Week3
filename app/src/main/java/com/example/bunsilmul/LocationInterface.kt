@@ -10,7 +10,7 @@ public interface LocationInterface{
     @POST("api/locations")
     fun CreateLocation(
             @Body locations: locations
-    ): Call<message>
+    ): Call<wantmessage>
 
     @GET("api/locations/{uid}")
     fun GetLocation(
