@@ -25,15 +25,12 @@ import java.io.ByteArrayInputStream
 import java.util.*
 
 private val retrofit = Retrofit.Builder()
-    .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
-    .addConverterFactory(GsonConverterFactory.create()) // converter 지정
-    .build() // retrofit 객체 생성
+        .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
+        .addConverterFactory(GsonConverterFactory.create()) // converter 지정
+        .build() // retrofit 객체 생성
 
-data class bunsilmulphoto(
-    var photo: String
-)
 
-class bunsilmulActivity: AppCompatActivity() {
+class Activity_mybunsilmul_bunsilmul: AppCompatActivity() {
 
 //    val objectid: String = intent.getStringExtra("id")
 //    val category: String = intent.getStringExtra("category")
@@ -73,8 +70,8 @@ class bunsilmulActivity: AppCompatActivity() {
                 }
 
                 override fun onResponse(
-                    call: Call<bunsilmulphoto>,
-                    response: retrofit2.Response<bunsilmulphoto>
+                        call: Call<bunsilmulphoto>,
+                        response: retrofit2.Response<bunsilmulphoto>
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
@@ -95,7 +92,7 @@ class bunsilmulActivity: AppCompatActivity() {
         }
 
         chat_button.setOnClickListener {
-            val intent = Intent(this@bunsilmulActivity, ChatActivity::class.java)
+            val intent = Intent(this@Activity_mybunsilmul_bunsilmul, ChatActivity::class.java)
 
             objectid?.let{intent.putExtra("id", it)}
             category?.let{intent.putExtra("category", it)}

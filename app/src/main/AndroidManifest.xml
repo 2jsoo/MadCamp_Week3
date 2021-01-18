@@ -29,7 +29,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".Activity_mychat"/>
+        <activity android:name=".Activity_mychat_bunsilmul"/>
+        <activity android:name=".Activity_mybunsilmul"/>
+        <activity android:name=".Activity_mybunsilmul_bunsilmul"/>
         <activity android:name=".FindActivity"/>
         <activity android:name=".bunsilmulActivity"/>
         <activity android:name=".MainActivity_Map"/>

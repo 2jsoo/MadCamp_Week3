@@ -20,4 +20,14 @@ public interface BunsilmulInterface{
     fun GetBunsilmulPhoto(
         @Path("id") id: String
     ): Call<bunsilmulphoto>
+
+    @GET("/api/bunsilmuls/bunsilmul/{id}")
+    fun GetBunsilmulbyID(
+            @Path("id") id: String
+    ):Call<bunsilmul>
+
+    @GET("api/bunsilmuls/user/{id}")
+    fun GetUserBunsilmul(
+            @Path("id") id: String
+    ): Call<Array<bunsilmul>>
 }
