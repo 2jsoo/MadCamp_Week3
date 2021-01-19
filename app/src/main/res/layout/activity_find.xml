@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".FindActivity">
+    tools:context=".FindActivity"
+    android:background="@color/black">
     ​
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -39,6 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text = "카테고리(필수)"
+            android:textColor="@color/white"
             app:layout_constraintTop_toTopOf="@+id/guideline"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="30dp"
@@ -50,7 +52,7 @@
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:layout_gravity="left"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_category"/>
@@ -59,17 +61,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text = "정보(필수)"
+            android:textColor="@color/white"
             app:layout_constraintTop_toBottomOf="@+id/text_category"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="60dp"
             android:layout_marginLeft="20dp"
             android:id="@+id/text_information" />
-        ​
+
         <EditText
             android:id="@+id/edit_text"
             android:hint="정보를 입력하세요"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="left"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
@@ -80,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text = "사진등록(필수)"
+            android:textColor="@color/white"
             app:layout_constraintTop_toBottomOf="@+id/text_information"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="70dp"
@@ -89,20 +93,29 @@
         <ImageButton
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:background="@drawable/radius"
+            android:backgroundTint="#6AFFFFFF"
+            android:layout_marginTop="10dp"
             android:src = "@drawable/ic_baseline_camera_alt_24"
             app:layout_constraintTop_toBottomOf="@+id/text_camera"
             app:layout_constraintLeft_toLeftOf="@+id/text_camera"
             android:id = "@+id/camera_button" />
         ​
+
         <Button
-            android:layout_width="wrap_content"
+            android:id="@+id/register_button"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text = "분실물 등록하기"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/radius"
+            android:backgroundTint="#80FFFFFF"
+            android:text="분실물 등록"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.948"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_weight = "1"
-            android:id = "@+id/register_button" />
+            app:layout_constraintRight_toRightOf="parent" />
         ​
     </androidx.constraintlayout.widget.ConstraintLayout>
     ​

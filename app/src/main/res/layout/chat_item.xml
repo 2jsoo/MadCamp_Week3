@@ -13,11 +13,12 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
         android:textSize="20sp"
-        android:textStyle="bold"
         android:textColor="@color/black"
-        android:background="@color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/radius_chat"
+        android:textAlignment="center"
+        android:backgroundTint="#0027FF"
         />
     <TextView
         android:id="@+id/my_text"
@@ -26,10 +27,11 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
         android:textSize="20sp"
-        android:textStyle="bold"
         android:textColor="@color/black"
-        android:background="@color/white"
+        android:textAlignment="center"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/radius_chat"
+        android:backgroundTint="#E8FF00"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

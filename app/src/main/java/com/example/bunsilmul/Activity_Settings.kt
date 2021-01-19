@@ -51,7 +51,7 @@ import kotlin.collections.HashMap
 class Activity_Settings : AppCompatActivity()  {
     private val TAG = Activity_Settings::class.java.name
 
-    lateinit var loggedInView: LinearLayout
+//    lateinit var loggedInView: LinearLayout
     lateinit var logoutButton: Button
     lateinit var imageView: ImageView
 
@@ -72,7 +72,7 @@ class Activity_Settings : AppCompatActivity()  {
         setSupportActionBar(toolBar)
 
         binding = DataBindingUtil.setContentView(this, R.layout.settings)
-        loggedInView = findViewById<View>(R.id.logged_in_view_s) as LinearLayout
+//        loggedInView = findViewById<View>(R.id.logged_in_view_s) as LinearLayout
 //        loginButton = findViewById<View>(R.id.login_button) as LoginButton
         logoutButton = findViewById<View>(R.id.logout_button_s) as Button
         imageView = findViewById<View>(R.id.profile_image_view_s) as ImageView
@@ -239,11 +239,11 @@ class Activity_Settings : AppCompatActivity()  {
                     .into(imageView)
             }
 //            loginButton.setVisibility(View.INVISIBLE)
-            loggedInView.visibility = View.VISIBLE
+//            loggedInView.visibility = View.VISIBLE
             logoutButton.visibility = View.VISIBLE
         } else {
 //            loginButton.setVisibility(View.VISIBLE)
-            loggedInView.visibility = View.INVISIBLE
+//            loggedInView.visibility = View.INVISIBLE
             logoutButton.visibility = View.INVISIBLE
         }
     }
