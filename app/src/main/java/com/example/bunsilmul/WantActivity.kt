@@ -12,7 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import net.daum.mf.map.api.*
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -45,6 +47,13 @@ object LocationApiObject {
         retrofit.create(LocationInterface::class.java)
     }
 }
+
+object DeviceApiObject {
+    val retrofitService: DeviceInterface by lazy {
+        retrofit.create(DeviceInterface::class.java)
+    }
+}
+
 
 class WantActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener{
     private val LOG_TAG = "WantActivity"
@@ -113,6 +122,48 @@ class WantActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                     }
                 }
             })
+
+
+
+            FirebaseAuth.getInstance().currentUser?.let{
+
+                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w("WantActivity", "Fetching FCM registration token failed", task.exception)
+                        return@OnCompleteListener
+                    }
+                    val token = task.result
+                    Log.d("FCMTOKEN", token!!)
+                    val calldevice = DeviceApiObject.retrofitService.CreateDevice(device(it.uid, token))
+                    calldevice.enqueue(object : retrofit2.Callback<devicemessage>{
+                        override fun onFailure(call: Call<devicemessage>, t: Throwable) {
+                            Log.d("DeviceCreate","Fail")
+                        }
+                        override fun onResponse(call: Call<devicemessage>, response: retrofit2.Response<devicemessage>) {
+                            if(response.isSuccessful){
+                                response.body()?.let{
+                                    if(it.message == "success"){
+                                        Log.d("DeviceCreate","Success")
+                                    }else{
+
+                                    }
+                                }
+                            }
+                            else{
+                                Log.d("DeviceCreate","response is error")
+                            }
+                        }
+                    })
+
+                })
+
+
+            }
+
+
+
+
+
 
 
         }

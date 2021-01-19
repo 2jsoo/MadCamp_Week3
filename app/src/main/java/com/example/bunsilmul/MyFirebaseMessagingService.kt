@@ -55,7 +55,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //        remoteMessage.notification?.let {
 //            Log.d(TAG, "Message Notification Body: ${it.body}")
 //        }
-        sendNotification(remoteMessage.data.get("title"), remoteMessage.data.get("message"))
+        sendNotification(remoteMessage.data.get("title"), remoteMessage.data.get("body"))
+
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
@@ -124,8 +125,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this,"default")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("알림")
-                .setContentText("알림")
+                .setContentTitle(title)
+                .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
