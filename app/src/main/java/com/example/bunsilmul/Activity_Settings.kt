@@ -98,6 +98,19 @@ class Activity_Settings : AppCompatActivity()  {
             finish()
         }
 
+        val mybunsilmul_button = findViewById<Button>(R.id.mybunsilmul)
+        mybunsilmul_button.setOnClickListener {
+            val intent = Intent(this@Activity_Settings, Activity_mybunsilmul::class.java)
+            startActivity(intent)
+        }
+
+        val mychat_button = findViewById<Button>(R.id.mychat)
+        mychat_button.setOnClickListener {
+            val intent = Intent(this@Activity_Settings, Activity_mychat::class.java)
+            startActivity(intent)
+        }
+
+
 //        Session.getCurrentSession().addCallback(KakaoSessionCallback())
     }
 

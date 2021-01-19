@@ -17,4 +17,5 @@ public interface LocationInterface{
             @Path("uid") uid: String?
     ): Call<Array<user_location>>
 
+
 }

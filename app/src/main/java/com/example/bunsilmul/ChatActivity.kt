@@ -106,11 +106,11 @@ class ChatActivity: AppCompatActivity() {
 
         send_button.setOnClickListener {
             val newchat = Chat(myuid, edit_text.text.toString())
-            databaseReference.child(objectid).push().setValue(newchat)
+            databaseReference.child(objectid).child("chat").push().setValue(newchat)
             edit_text.text = null
         }
 
-        databaseReference.child(objectid).addChildEventListener(object: ChildEventListener{
+        databaseReference.child(objectid).child("chat").addChildEventListener(object: ChildEventListener{
             override fun onCancelled(error: DatabaseError) {
             }
 

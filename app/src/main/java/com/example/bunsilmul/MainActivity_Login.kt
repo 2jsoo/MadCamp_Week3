@@ -24,6 +24,10 @@ import com.kakao.util.exception.KakaoException;
 
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 //import com.example.bunsilmul.databinding.ActivityMainLoginBinding
 //import com.google.android.material.snackbar.Snackbar
 
@@ -50,6 +54,22 @@ class MainActivity_Login : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+//            val msg = getString(0, token)
+            Log.d("FCMTOKEN", token!!)
+//            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+        })
+
 
 //        println(Session.getCurrentSession().getAccessToken())
 
