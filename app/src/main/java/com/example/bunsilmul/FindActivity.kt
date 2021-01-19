@@ -30,6 +30,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
 import net.daum.mf.map.api.MapPoint
@@ -93,6 +94,7 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
     private var input_photo = false
 
     private lateinit var register_btn: Button
+    private lateinit var register_btn_click: Button
 
 
     private var bunsilmul = bunsilmul(null,null, null, null, null, null, null)
@@ -176,12 +178,14 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
             ) {
                 if(position == 0 ){
                     input_category = false
-                    register_btn.isEnabled =false
+                    register_btn.visibility = View.VISIBLE
+                    register_btn_click.visibility = View.INVISIBLE
                 }else{
                     input_category = true
                     bunsilmul.category = list[position]
                     if(input_category && input_information && input_photo){
-                        register_btn.isEnabled = true
+                        register_btn.visibility = View.INVISIBLE
+                        register_btn_click.visibility = View.VISIBLE
                     }
                 }
 
@@ -209,15 +213,18 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if(s==null){
                     input_information = false
-                    register_btn.isEnabled = false
+                    register_btn.visibility = View.VISIBLE
+                    register_btn_click.visibility = View.INVISIBLE
                 }else if(s.isEmpty()){
                     input_information = false
-                    register_btn.isEnabled = false
+                    register_btn.visibility = View.VISIBLE
+                    register_btn_click.visibility = View.INVISIBLE
                 } else{
                     input_information = true
                     bunsilmul.information = s.toString()
                     if(input_category && input_information && input_photo){
-                        register_btn.isEnabled = true
+                        register_btn_click.visibility = View.VISIBLE
+                        register_btn.visibility = View.INVISIBLE
                     }
 
                 }
@@ -227,19 +234,26 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
 
 
         register_btn = findViewById<Button>(R.id.register_button)
-        register_btn.isEnabled  = false
-        register_btn.setOnClickListener {
+        register_btn_click = findViewById<Button>(R.id.register_button_click)
+//        register_btn.isEnabled  = false
+        register_btn.visibility = View.VISIBLE
+        register_btn_click.visibility = View.INVISIBLE
+        register_btn_click.setOnClickListener {
             Log.d("분실물 위치",mapView.mapCenterPoint.mapPointGeoCoord.longitude.toString()+mapView.mapCenterPoint.mapPointGeoCoord.latitude.toString())
             //서버로 전달
             bunsilmul.uid = FirebaseAuth.getInstance().currentUser?.uid
             bunsilmul.latitude = mapView.mapCenterPoint.mapPointGeoCoord.latitude
             bunsilmul.longitude = mapView.mapCenterPoint.mapPointGeoCoord.longitude
-            register_btn.isEnabled = false
+//            register_btn.isEnabled = false
+            register_btn.visibility = View.VISIBLE
+            register_btn_click.visibility = View.INVISIBLE
             val call = BunsilmulApiObject.retrofitService.CreateBunsilmul(bunsilmul)
             call.enqueue(object: retrofit2.Callback<message> {
                 override fun onFailure(call: Call<message>, t: Throwable) {
                     Log.d("BunsilmulCreate","Fail")
-                    register_btn.isEnabled = true
+//                    register_btn.isEnabled = true
+                    register_btn.visibility = View.INVISIBLE
+                    register_btn_click.visibility = View.VISIBLE
                 }
                 override fun onResponse(call: Call<message>, response: retrofit2.Response<message>) {
                     if(response.isSuccessful){
@@ -254,13 +268,17 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                                 finish()
                             } else {
                                 Log.d("BunsilmulCreate","error")
-                                register_btn.isEnabled = true
+//                                register_btn.isEnabled = true
+                                register_btn.visibility = View.INVISIBLE
+                                register_btn_click.visibility = View.VISIBLE
                             }
                         }
                     }
                     else{
                         Log.d("BunsilmulCreate","response is error")
-                        register_btn.isEnabled = true
+//                        register_btn.isEnabled = true
+                        register_btn.visibility = View.INVISIBLE
+                        register_btn_click.visibility = View.VISIBLE
                     }
                 }
             })
@@ -357,7 +375,9 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                             bunsilmul.photo = imageToString(bitmapOrigin)
                             input_photo = true
                             if(input_category && input_information && input_photo){
-                                register_btn.isEnabled = true
+//                                register_btn.isEnabled = true
+                                register_btn.visibility = View.INVISIBLE
+                                register_btn_click.visibility = View.VISIBLE
                             }
                         }
                     }
@@ -376,7 +396,9 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                             bunsilmul.photo = imageToString(bitmap)
                             input_photo = true
                             if(input_category && input_information && input_photo){
-                                register_btn.isEnabled = true
+//                                register_btn.isEnabled = true
+                                register_btn.visibility = View.INVISIBLE
+                                register_btn_click.visibility = View.VISIBLE
                             }
                         }
                     }
@@ -401,7 +423,9 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
                     photo_btn.setImageBitmap(bitmap)
                     input_photo = true
                     if(input_category && input_information && input_photo){
-                        register_btn.isEnabled = true
+//                        register_btn.isEnabled = true
+                        register_btn.visibility = View.INVISIBLE
+                        register_btn_click.visibility = View.VISIBLE
                     }
                 }
                 else{ Log.d("Error", "Something Wrong") }
