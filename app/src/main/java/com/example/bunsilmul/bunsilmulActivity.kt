@@ -22,7 +22,7 @@ import java.util.*
 private val retrofit = Retrofit.Builder()
     .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
     .addConverterFactory(GsonConverterFactory.create()) // converter 지정
-    .build() // retrofit 객체 생성
+    .build() // com.example.bunsilmul.retrofit 객체 생성
 
 data class bunsilmulphoto(
     var photo: String

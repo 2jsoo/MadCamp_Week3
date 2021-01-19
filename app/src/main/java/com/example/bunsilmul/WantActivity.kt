@@ -38,7 +38,7 @@ data class wantmessage(
 private val retrofit = Retrofit.Builder()
         .baseUrl("http://192.249.18.152:8000/") // 마지막 / 반드시 들어가야 함
         .addConverterFactory(GsonConverterFactory.create()) // converter 지정
-        .build() // retrofit 객체 생성
+        .build() // com.example.bunsilmul.retrofit 객체 생성
 
 object LocationApiObject {
     val retrofitService: LocationInterface by lazy {
@@ -76,6 +76,13 @@ class WantActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
         //지도에 이동 경로 나타내기
         val route_button = findViewById<Button>(R.id.route_button)
         route_button.setOnClickListener {
+            //background에서 저장된 위치 정보들 서버로 보냄
+            locations.uid = FirebaseAuth.getInstance().currentUser?.uid
+//            for (recorded_location in )
+
+
+
+
             //kakao map에 이동 경로 표시하기
             polyline = MapPolyline()
             polyline.tag = 1000
@@ -146,33 +153,33 @@ class WantActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
         val mapPointGeo = currentLocation?.mapPointGeoCoord
         Log.i(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f,%f) accuracy (%f)", mapPointGeo?.latitude, mapPointGeo?.longitude, accuracyInMeters))
         //서버로 location 전달
-        if (mapPointGeo != null) {
-            locations.uid = FirebaseAuth.getInstance().currentUser?.uid
-            locations.location.latitude = mapPointGeo.latitude
-            locations.location.longitude = mapPointGeo.longitude
-
-            val call = LocationApiObject.retrofitService.CreateLocation(locations)
-            call.enqueue(object : retrofit2.Callback<wantmessage>{
-                override fun onFailure(call: Call<wantmessage>, t: Throwable) {
-                    Log.d("LocationCreate","Fail")
-                }
-                override fun onResponse(call: Call<wantmessage>, response: retrofit2.Response<wantmessage>) {
-                    if(response.isSuccessful){
-                        Log.d("Location","Success")
-                        response.body()?.let{
-                            if(it.message == "success"){
-                                Log.d("LocationCreate","Success")
-                            } else {
-                                Log.d("LocationCreate","error")
-                            }
-                        }
-                    }
-                    else{
-                        Log.d("LocationCreate","response is error")
-                    }
-                }
-            })
-        }
+//        if (mapPointGeo != null) {
+//            locations.uid = FirebaseAuth.getInstance().currentUser?.uid
+//            locations.location.latitude = mapPointGeo.latitude
+//            locations.location.longitude = mapPointGeo.longitude
+//
+//            val call = LocationApiObject.retrofitService.CreateLocation(locations)
+//            call.enqueue(object : retrofit2.Callback<wantmessage>{
+//                override fun onFailure(call: Call<wantmessage>, t: Throwable) {
+//                    Log.d("LocationCreate","Fail")
+//                }
+//                override fun onResponse(call: Call<wantmessage>, response: retrofit2.Response<wantmessage>) {
+//                    if(response.isSuccessful){
+//                        Log.d("Location","Success")
+//                        response.body()?.let{
+//                            if(it.message == "success"){
+//                                Log.d("LocationCreate","Success")
+//                            } else {
+//                                Log.d("LocationCreate","error")
+//                            }
+//                        }
+//                    }
+//                    else{
+//                        Log.d("LocationCreate","response is error")
+//                    }
+//                }
+//            })
+//        }
     }
     override fun onCurrentLocationDeviceHeadingUpdate(p0: MapView?, p1: Float) {
         Log.d("회전","회전됨")

@@ -1,6 +1,7 @@
 package com.example.bunsilmul
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
@@ -28,10 +30,11 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 private val retrofit = Retrofit.Builder()
     .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
     .addConverterFactory(GsonConverterFactory.create()) // converter 지정
-    .build() // retrofit 객체 생성
+    .build() // com.example.bunsilmul.retrofit 객체 생성
 
 class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
 
@@ -46,15 +49,18 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
 
     private val GPS_ENABLE_REQUEST_CODE = 2001
     private val PERMISSIONS_REQUEST_CODE = 100
-    var REQUIRED_PERMISSIONS = arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION)
+    var REQUIRED_PERMISSIONS = arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION)
 
     private var pause = false
 
     private lateinit var mHandler: Handler
 
+    private var locations = locations(null, user_location(.0, .0))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_map)
+
 
         mapView = MapView(this)
         mapViewContainer = findViewById<View>(R.id.map_view) as ViewGroup
@@ -64,6 +70,8 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         mapView.setZoomLevelFloat(3.0F, true)
         mapView.setMapRotationAngle(30F, true)
         mapView.setMapViewEventListener(this)
+        mapView.setCurrentLocationEventListener(this)
+
         if(!checkLocationServicesStatus()){ // GPS 꺼져있음
             showDialogForLocationServiceSetting()
         }else{ // GPS 켜져있으면 RUNTIME PERMISSION을 요구함.
@@ -161,12 +169,14 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         super.onDestroy()
         Log.d("전환", "Destroy")
         mapViewContainer.removeAllViews() // Activity 꺼지면 전부 제거
-
+//        com.example.bunsilmul.ServiceLocation.startService(this)
+//        moveTaskToBack(true)
     }
 
     override fun onStop() {
         super.onStop()
-//        mapViewContainer.removeAllViews()
+        mapViewContainer.removeAllViews()
+//        com.example.bunsilmul.ServiceLocation.startService(this)
     }
 
     override fun onPause() {
@@ -174,6 +184,7 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         Log.d("전환", "Pause")
         if(pause) {
             mapViewContainer.removeAllViews()
+//            com.example.bunsilmul.ServiceLocation.startService(this)
         }
 //        mapView.visibility = View.INVISIBLE
 
@@ -200,10 +211,44 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
         super.onResume()
     }
 
+//    override fun moveTaskToBack(nonRoot: Boolean): Boolean {
+//        Log.d("백그라운드", "background")
+//        return super.moveTaskToBack(true)
+//    }
+
 
     override fun onCurrentLocationUpdate(p0: MapView?, currentLocation: MapPoint?, accuracyInMeters: Float) {
         val mapPointGeo = currentLocation?.mapPointGeoCoord
         Log.i(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f,%f) accuracy (%f)", mapPointGeo?.latitude, mapPointGeo?.longitude, accuracyInMeters))
+
+//        //서버로 location 전달
+//        if (mapPointGeo != null) {
+//            locations.uid = FirebaseAuth.getInstance().currentUser?.uid
+//            locations.location.latitude = mapPointGeo.latitude
+//            locations.location.longitude = mapPointGeo.longitude
+//
+//            val call = LocationApiObject.retrofitService.CreateLocation(locations)
+//            call.enqueue(object : retrofit2.Callback<wantmessage>{
+//                override fun onFailure(call: Call<wantmessage>, t: Throwable) {
+//                    Log.d("LocationCreate","Fail")
+//                }
+//                override fun onResponse(call: Call<wantmessage>, response: retrofit2.Response<wantmessage>) {
+//                    if(response.isSuccessful){
+//                        Log.d("Location","Success")
+//                        response.body()?.let{
+//                            if(it.message == "success"){
+//                                Log.d("LocationCreate","Success")
+//                            } else {
+//                                Log.d("LocationCreate","error")
+//                            }
+//                        }
+//                    }
+//                    else{
+//                        Log.d("LocationCreate","response is error")
+//                    }
+//                }
+//            })
+//        }
     }
 
     override fun onCurrentLocationDeviceHeadingUpdate(p0: MapView?, p1: Float) {
@@ -279,6 +324,45 @@ class MainActivity_Map : AppCompatActivity(), MapView.CurrentLocationEventListen
                 )
             }
         }
+
+
+
+
+        val hasBackGroundLocationPermission = ContextCompat.checkSelfPermission(
+            this@MainActivity_Map,
+            ACCESS_BACKGROUND_LOCATION
+        )
+
+        if (hasBackGroundLocationPermission == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@MainActivity_Map,
+                    REQUIRED_PERMISSIONS[1]
+                )
+            ) {
+                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
+                Toast.makeText(this@MainActivity_Map, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG)
+                    .show()
+                // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+                ActivityCompat.requestPermissions(
+                    this@MainActivity_Map, REQUIRED_PERMISSIONS,
+                    PERMISSIONS_REQUEST_CODE
+                )
+            } else {
+                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
+                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+                ActivityCompat.requestPermissions(
+                    this@MainActivity_Map, REQUIRED_PERMISSIONS,
+                    PERMISSIONS_REQUEST_CODE
+                )
+            }
+        }
+
+
+
+
+
     }
 
     private fun showDialogForLocationServiceSetting() {

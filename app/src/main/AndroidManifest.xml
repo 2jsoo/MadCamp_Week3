@@ -3,9 +3,11 @@
     package="com.example.bunsilmul">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:name=".KakaoLoginApplication"
@@ -16,31 +18,41 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bunsilmul"
         android:usesCleartextTraffic="true">
+
+        <service
+            android:name=".ServiceLocation"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false" />
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="f7a35f50a086ec05bf666c69e81fd1c3"/>
+            android:value="f7a35f50a086ec05bf666c69e81fd1c3" />
 
-
-        <activity android:name=".MainActivity_Login" android:launchMode="singleInstance">
+        <activity
+            android:name=".MainActivity_Login"
+            android:launchMode="singleInstance">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".FindActivity"/>
-        <activity android:name=".bunsilmulActivity"/>
-        <activity android:name=".MainActivity_Map"/>
-        <activity android:name=".WantActivity"/>
+        <activity android:name=".FindActivity" />
+        <activity android:name=".bunsilmulActivity" />
+        <activity android:name=".MainActivity_Map" />
+        <activity android:name=".WantActivity" />
         <activity android:name=".Activity_Settings">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatActivity"/>
+        <activity android:name=".ChatActivity" />
+
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -51,8 +63,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-
     </application>
+
 
 </manifest>

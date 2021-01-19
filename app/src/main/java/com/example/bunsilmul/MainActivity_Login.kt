@@ -4,7 +4,6 @@ package com.example.bunsilmul
 import android.content.Intent;
 
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
@@ -14,27 +13,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
 import com.kakao.usermgmt.LoginButton;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.util.exception.KakaoException;
 
-import android.os.Handler;
 import android.widget.*
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.databinding.DataBindingUtil
 //import com.example.bunsilmul.databinding.ActivityMainLoginBinding
 //import com.google.android.material.snackbar.Snackbar
 
@@ -52,6 +41,11 @@ class MainActivity_Login : AppCompatActivity() {
     lateinit var logoutButton: Button
     lateinit var imageView: ImageView
 
+//    //Variable to hold service class name
+//    val serviceClass = com.example.bunsilmul.ServiceLocation::class.java
+//    //Initialize new Intent instance
+//    val intent_service = Intent(this, serviceClass)
+
 //    lateinit var binding: ActivityMainLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +57,10 @@ class MainActivity_Login : AppCompatActivity() {
 //            KakaoSDK.init();
 //        }
         setContentView(R.layout.activity_main_login)
+
+        Intent(this, ServiceLocation::class.java).also { intent ->
+            startService(intent)
+        }
 
 //        val toolBar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
 //        setSupportActionBar(toolBar)
@@ -97,7 +95,18 @@ class MainActivity_Login : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+//        Intent(this, ServiceLocation::class.java).also { intent ->
+//            startService(intent)
+//        }
 //        updateUI()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 
@@ -234,6 +243,7 @@ class MainActivity_Login : AppCompatActivity() {
             Toast.makeText(applicationContext, "한번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 

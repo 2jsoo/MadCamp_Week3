@@ -60,7 +60,7 @@ data class message(
 private val retrofit = Retrofit.Builder()
     .baseUrl("http://192.249.18.133:8080/") // 마지막 / 반드시 들어가야 함
     .addConverterFactory(GsonConverterFactory.create()) // converter 지정
-    .build() // retrofit 객체 생성
+    .build() // com.example.bunsilmul.retrofit 객체 생성
 
 
 object BunsilmulApiObject {
@@ -97,9 +97,12 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
 
     private var bunsilmul = bunsilmul(null,null, null, null, null, null, null)
 
+    private var locations = locations(null, user_location(.0, .0))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find)
+
 
         mapView = MapView(this)
         mapViewContainer = findViewById<View>(R.id.find_map_view) as ViewGroup
@@ -455,6 +458,35 @@ class FindActivity : AppCompatActivity(), MapView.CurrentLocationEventListener, 
     override fun onCurrentLocationUpdate(p0: MapView?, currentLocation: MapPoint?, accuracyInMeters: Float) {
         val mapPointGeo = currentLocation?.mapPointGeoCoord
         Log.i(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f,%f) accuracy (%f)", mapPointGeo?.latitude, mapPointGeo?.longitude, accuracyInMeters))
+
+        //서버로 location 전달
+        if (mapPointGeo != null) {
+            locations.uid = FirebaseAuth.getInstance().currentUser?.uid
+            locations.location.latitude = mapPointGeo.latitude
+            locations.location.longitude = mapPointGeo.longitude
+
+            val call = LocationApiObject.retrofitService.CreateLocation(locations)
+            call.enqueue(object : retrofit2.Callback<wantmessage>{
+                override fun onFailure(call: Call<wantmessage>, t: Throwable) {
+                    Log.d("LocationCreate","Fail")
+                }
+                override fun onResponse(call: Call<wantmessage>, response: retrofit2.Response<wantmessage>) {
+                    if(response.isSuccessful){
+                        Log.d("Location","Success")
+                        response.body()?.let{
+                            if(it.message == "success"){
+                                Log.d("LocationCreate","Success")
+                            } else {
+                                Log.d("LocationCreate","error")
+                            }
+                        }
+                    }
+                    else{
+                        Log.d("LocationCreate","response is error")
+                    }
+                }
+            })
+        }
     }
 
 
